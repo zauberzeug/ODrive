@@ -1,7 +1,51 @@
-# Unreleased Features
-Please add a note of your changes below this heading if you make a Pull Request.
 
-# Releases
+## [0.5.6] - 2023-04-29
+
+### Fixed
+
+* Fixed race condition in homing sequence that was causing strange behaviour.  Fixes [#634](https://github.com/odriverobotics/ODrive/issues/634)]  
+* When using a load encoder, CAN will report the correct position and velocity.
+* When using a load encoder, homing will reset the correct linear position.  Fixes [#651](https://github.com/odriverobotics/ODrive/issues/651)
+* Implemented CAN controller error message, which was previously defined but not actually implemented.
+* Get Vbus Voltage message updated to match ODrive Pro's CANSimple implementation.
+* `vel_setpoint` and `torque_setpoint` will be clamped to `vel_limit` and the active torque limit.  Fixes [#647](https://github.com/odriverobotics/ODrive/issues/647)
+
+### Added
+
+* Added public `controller.get_anticogging_value(uint32)` fibre function to index into the the cogging map.  Fixes [#690](https://github.com/odriverobotics/ODrive/issues/690)
+* Added Get ADC Voltage message to CAN (0x1C).  Send the desired GPIO number in byte 1, and the ODrive will respond with the ADC voltage from that pin (if previously configured for analog)
+* Added CAN heartbeat message flags for motor, controller, and encoder error.  If flag is true, fetch the corresponding error with the respective message.
+* Added scoped enums, e.g. `CONTROL_MODE_POSITION_CONTROL` can be used as `ControlMode.POSITION_CONTROL`
+* Added more cyclic messages to can.  Use the `rate_ms` values in `<odrv>.<axis>.config.can` to set the cycle rate of the message in milliseconds.  Set a rate to 0 to disable sending.  The following variables are avaialble:
+
+Command ID | Rate Variable | Message Name
+:-- | :-- | :--
+ 0x01 | `heartbeat_rate_ms` | Heartbeat
+ 0x09 | `encoder_rate_ms` | Get Encoder Estimates
+ 0x03 | `motor_error_rate_ms` | Get Motor Error
+ 0x04 | `encoder_error_rate_ms` | Get Encoder Error
+ 0x1D | `controller_error_rate_ms` | Get Controller Error
+ 0x05 | `sensorless_error_rate_ms` | Get Sensorless Error
+ 0x0A | `encoder_count_rate_ms` | Get Encoder Count
+ 0x14 | `iq_rate_ms` | Get Iq
+ 0x15 | `sensorless_rate_ms` | Get Sensorless Estimates
+ 0x17 | `bus_vi_rate_ms` | Get Bus Voltage Current
+
+### Changed
+
+* Improved can_generate_dbc.py file and resultant .dbc.  Now supports 8 ODrive axes (0..7) natively
+* Add units and value tables to every signal in odrive-cansimple.dbc
+* Autogenerate odrive-cansimple.dbc on compile
+
+## [0.5.5] - 2022-08-11
+
+* CANSimple messages which previously required the rtr bit to be set will now also respond if DLC = 0
+* Ensure endstops update before being checked for errors, to prevent [#625](https://github.com/odriverobotics/ODrive/issues/625)
+* Reset trajectory_done_ during homing to ensure a new trajectory is actually computed [#634](https://github.com/odriverobotics/ODrive/issues/634)
+* Use `input_xxx` as a DC offset in tuning mode
+* Sync `steps_` with input pos.
+* Trigger reset of input_pos and pos_setpoint to estimate when changing control mode into position control
+
 ## [0.5.4] - 2021-10-12
 
 ### Fixed
@@ -12,7 +56,6 @@ Please add a note of your changes below this heading if you make a Pull Request.
 * Added `<axis>.controller.config.vel_integrator_limit`
 * Allow setting controller gains on CAN Simple
 
-# Releases
 ## [0.5.3] - 2021-09-03
 
 ### Fixed
@@ -31,7 +74,6 @@ Please add a note of your changes below this heading if you make a Pull Request.
 * Firmware boots on devices with unset OTP.
 * Changed CAN heartbeat message to include "trajectory done" flag
 
-# Releases
 ## [0.5.2] - 2021-05-21
 
 ### Fixed
@@ -125,7 +167,6 @@ Please add a note of your changes below this heading if you make a Pull Request.
 * `<odrv>.config.brake_resistance == 0.0` is no longer a valid way to disable the brake resistor. Use `<odrv>.config.enable_brake_resistor` instead. A reboot is necessary for this to take effect.
 * `<odrv>.can.set_baud_rate()` was removed. The baudrate is now automatically updated when writing to `<odrv>.can.config.baud_rate`.
 
-# Releases
 ## [0.5.1] - 2020-09-27
 ### Added
 * Added motor `torque_constant`: units of torque are now [Nm] instead of just motor current.
@@ -203,7 +244,6 @@ Please add a note of your changes below this heading if you make a Pull Request.
 ### Changed
 * Ascii command for reboot changed from `sb` to `sr`.
 
-# Releases
 ## [0.4.10] - 2019-04-24
 ### Fixed
 * Index search would trigger in the wrong place.

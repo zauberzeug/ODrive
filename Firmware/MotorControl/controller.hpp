@@ -60,6 +60,7 @@ public:
         Controller* parent;
         void set_input_filter_bandwidth(float value) { input_filter_bandwidth = value; parent->update_filter_gains(); }
         void set_steps_per_circular_range(uint32_t value) { steps_per_circular_range = value > 0 ? value : steps_per_circular_range; }
+        void set_control_mode(ControlMode value) { control_mode = value; parent->control_mode_updated(); }
     };
 
     
@@ -71,6 +72,8 @@ public:
     constexpr void input_pos_updated() {
         input_pos_updated_ = true;
     }
+    bool control_mode_updated();
+    void set_input_pos_and_steps(float pos);
 
     bool select_encoder(size_t encoder_num);
 
@@ -80,7 +83,12 @@ public:
     
     // TODO: make this more similar to other calibration loops
     void start_anticogging_calibration();
+    float remove_anticogging_bias();
     bool anticogging_calibration(float pos_estimate, float vel_estimate);
+    
+    float get_anticogging_value(uint32_t index) {
+        return (index < 3600) ? config_.anticogging.cogging_map[index] : 0.0f;
+    }
 
     void update_filter_gains();
     bool update();
@@ -125,7 +133,7 @@ public:
     OutputPort<float> torque_output_ = 0.0f;
 
     // custom setters
-    void set_input_pos(float value) { input_pos_ = value; input_pos_updated(); }
+    void set_input_pos(float value) { set_input_pos_and_steps(value); input_pos_updated(); }
 };
 
 #endif // __CONTROLLER_HPP

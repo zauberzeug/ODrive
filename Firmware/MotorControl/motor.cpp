@@ -339,6 +339,7 @@ bool Motor::setup() {
 
 void Motor::disarm_with_error(Motor::Error error){
     error_ |= error;
+    axis_->error_ |= Axis::ERROR_MOTOR_FAILED;
     last_error_time_ = odrv.n_evt_control_loop_ * current_meas_period;
     disarm();
 }
@@ -444,7 +445,7 @@ bool Motor::measure_phase_resistance(float test_current, float max_voltage) {
     }
 
     float I_beta = control_law.get_Ibeta();
-    if (is_nan(I_beta) || (abs(I_beta) / test_current) > 0.1f) {
+    if (is_nan(I_beta) || (abs(I_beta) / test_current) > 0.2f) {
         disarm_with_error(ERROR_UNBALANCED_PHASES);
         success = false;
     }

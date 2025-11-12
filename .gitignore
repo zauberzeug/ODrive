@@ -63,3 +63,6 @@ Firmware/Tests/bin/
 GUI/dist_electron
 GUI/node_modules
 GUI/build
+
+docs/reStructuredText/_build/
+tools/odrive-cansimple.ini

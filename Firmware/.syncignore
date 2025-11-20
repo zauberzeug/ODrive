@@ -1,8 +1,0 @@
-.git/
-__pycache__/
-.DS_Store
-*.tmp
-.env
-#cursor files
-.cursor
-AGENTS.md

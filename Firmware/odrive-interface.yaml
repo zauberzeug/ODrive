@@ -608,6 +608,7 @@ interfaces:
       iq_rate_ms: uint32
       sensorless_rate_ms: uint32
       bus_vi_rate_ms: uint32
+      motor_thermistor_rate_ms: uint32
 
   ODrive.ThermistorCurrentLimiter:
     c_is_class: False
@@ -1091,6 +1092,10 @@ interfaces:
             type: float32
             unit: N·m / (turn/s * s)
             doc: units = N·m / (turn/s * s)
+          vel_differentiator_gain:
+            type: float32
+            unit: N·m / turn
+            doc: D-term gain applied on the velocity error derivative. Units = N·m / turn
           vel_integrator_limit:
             type: float32
             unit: N·m

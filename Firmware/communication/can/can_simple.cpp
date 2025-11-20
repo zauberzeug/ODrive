@@ -140,6 +140,10 @@ void CANSimple::do_command(Axis& axis, const can_Message_t& msg) {
             if (msg.rtr || msg.len == 0)
                 get_bus_voltage_current_callback(axis);
             break;
+        case MSG_GET_MOTOR_THERMISTOR_TEMP:
+            if (msg.rtr || msg.len == 0)
+                get_motor_thermistor_temperature_callback(axis);
+            break;
         case MSG_CLEAR_ERRORS:
             clear_errors_callback(axis, msg);
             break;
@@ -365,6 +369,19 @@ bool CANSimple::get_bus_voltage_current_callback(const Axis& axis) {
     return canbus_->send_message(txmsg);
 }
 
+bool CANSimple::get_motor_thermistor_temperature_callback(const Axis& axis) {
+    can_Message_t txmsg;
+
+    txmsg.id = axis.config_.can.node_id << NUM_CMD_ID_BITS;
+    txmsg.id += MSG_GET_MOTOR_THERMISTOR_TEMP;
+    txmsg.isExt = axis.config_.can.is_extended;
+    txmsg.len = 8;
+
+    can_setSignal<float>(txmsg, axis.motor_.motor_thermistor_.temperature_, 0, 32, true);
+
+    return canbus_->send_message(txmsg);
+}
+
 bool CANSimple::get_adc_voltage_callback(const Axis& axis, const can_Message_t& msg) {
     can_Message_t txmsg;
 
@@ -406,7 +423,7 @@ uint32_t CANSimple::service_stack() {
     };
 
     for (auto& axis : axes) {
-        std::array<periodic, 10> periodics = {{
+        std::array<periodic, 11> periodics = {{
             {axis.config_.can.heartbeat_rate_ms, axis.can_.last_heartbeat, &CANSimple::send_heartbeat},
             {axis.config_.can.encoder_rate_ms, axis.can_.last_encoder, &CANSimple::get_encoder_estimates_callback},
             {axis.config_.can.motor_error_rate_ms, axis.can_.last_motor_error, &CANSimple::get_motor_error_callback},
@@ -417,6 +434,7 @@ uint32_t CANSimple::service_stack() {
             {axis.config_.can.iq_rate_ms, axis.can_.last_iq, &CANSimple::get_iq_callback},
             {axis.config_.can.sensorless_rate_ms, axis.can_.last_sensorless, &CANSimple::get_sensorless_estimates_callback},
             {axis.config_.can.bus_vi_rate_ms, axis.can_.last_bus_vi, &CANSimple::get_bus_voltage_current_callback},
+            {axis.config_.can.motor_thermistor_rate_ms, axis.can_.last_motor_thermistor, &CANSimple::get_motor_thermistor_temperature_callback},
         }};
 
         MEASURE_TIME(axis.task_times_.can_heartbeat) {

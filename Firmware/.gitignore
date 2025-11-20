@@ -18,6 +18,10 @@ Odrive.xml
 .settings/
 .project
 
+#cursor files
+.cursor
+AGENTS.md
+
 # VSCode stuff
 /.vscode/.cortex-debug.*.state.json
 

@@ -37,6 +37,7 @@ class CANSimple {
         MSG_SET_VEL_GAINS,
         MSG_GET_ADC_VOLTAGE,
         MSG_GET_CONTROLLER_ERROR,
+        MSG_GET_MOTOR_THERMISTOR_TEMP,
         MSG_CO_HEARTBEAT_CMD = 0x700,  // CANOpen NMT Heartbeat  SEND
     };
 
@@ -64,6 +65,7 @@ class CANSimple {
     bool get_iq_callback(const Axis& axis);
     bool get_sensorless_estimates_callback(const Axis& axis);
     bool get_bus_voltage_current_callback(const Axis& axis);
+    bool get_motor_thermistor_temperature_callback(const Axis& axis);
     // msg.rtr bit must NOT be set
     bool get_adc_voltage_callback(const Axis& axis, const can_Message_t& msg);
 

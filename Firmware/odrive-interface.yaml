@@ -1092,10 +1092,6 @@ interfaces:
             type: float32
             unit: N·m / (turn/s * s)
             doc: units = N·m / (turn/s * s)
-          vel_differentiator_gain:
-            type: float32
-            unit: N·m / turn
-            doc: D-term gain applied on the velocity error derivative. Units = N·m / turn
           vel_integrator_limit:
             type: float32
             unit: N·m

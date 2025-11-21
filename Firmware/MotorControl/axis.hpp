@@ -64,6 +64,7 @@ public:
         uint32_t iq_rate_ms = 0;
         uint32_t sensorless_rate_ms = 0;
         uint32_t bus_vi_rate_ms = 0;
+        uint32_t motor_thermistor_rate_ms = 500;
     };
 
     struct Config_t {
@@ -117,6 +118,7 @@ public:
         uint32_t last_iq = 0;
         uint32_t last_sensorless = 0;
         uint32_t last_bus_vi = 0;
+        uint32_t last_motor_thermistor = 0;
     };
 
     Axis(int axis_num,
